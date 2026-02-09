@@ -1,0 +1,17 @@
+.env
+
+*.session
+*.session-journal
+
+__pycache__/
+**/__pycache__/
+**/**/__pycache__/
+**/**/**/__pycache__/
+
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/*
+venv/*
+
+*.log

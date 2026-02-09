@@ -1,0 +1,18 @@
+[tool.ruff]
+# Set the maximum line length (88 is the standard "Black" style)
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable specific rule sets
+# E, F = Default (Pyflakes and error checks)
+# I = Import sorting (isort)
+# UP = Pyupgrade (suggests modern Python syntax)
+select = ["E", "F", "I", "UP"]
+
+# Ignore specific rules if they are too annoying
+ignore = ["E501"] # Ignore line-length violations (optional)
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
