@@ -59,10 +59,17 @@ async def main() -> None:
     TG_API_HASH = os.getenv("TG_API_HASH")
     TARGET_CHATS = os.getenv("TELEGRAM_CHATS").split(",")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-    POSTGRE_DB_URL = os.getenv("POSTGRE_DB_URL")
     FLASS_BOT_TOKEN = os.getenv("FLASS_BOT_TOKEN")
     FLASS_BOT_API_ID = os.getenv("FLASS_BOT_API_ID")
     FLASS_BOT_API_HASH = os.getenv("FLASS_BOT_API_HASH")
+
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    db_host = os.getenv("DB_HOST", "db")  # Именно "db", как в docker-compose
+    db_name = os.getenv("DB_NAME")
+
+    # Строка подключения будет выглядеть так:
+    POSTGRE_DB_URL = f"postgresql://{db_user}:{db_password}@{db_host}:5432/{db_name}"
 
     try:
         route_configs = [

@@ -1,7 +1,39 @@
+version: '3.8'
+
 services:
-  flass:
+  # Сервис Базы Данных
+  db:
+    image: postgres:15-alpine
+    container_name: flass_postgre
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME:-flight_data}
     volumes:
-      # Слева: путь на сервере (относительно docker-compose.yml)
-      # Справа: путь внутри контейнера (как указано в WORKDIR Dockerfile)
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  flass-app:
+    build: .
+    container_name: flass_app
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
       - .:/app
       - ./logs:/app/logs
+    environment:
+      - TZ=Asia/Bishkek
+      - DB_HOST=db
+      - DB_PORT=5432
+
+volumes:
+  postgres_data:
