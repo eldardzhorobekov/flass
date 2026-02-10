@@ -97,6 +97,7 @@ async def read_chats(
         # This keeps the script running until you kill it or it loses connection
         logger.info(f"Reading chats {target_chats}")
         await tg_client.start()
+        logger.debug("Bot is running...")
         await tg_client.run_until_disconnected()
     finally:
         # This block ALWAYS runs, even if the script crashes or you press Ctrl+C

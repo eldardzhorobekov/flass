@@ -55,12 +55,14 @@ async def worker_user_notification(
 
 
 async def main() -> None:
-    TG_API_ID = os.getenv("TG_API_ID")
+    TG_API_SESSION_NAME = os.getenv("TG_API_SESSION_NAME")
+    TG_API_ID = int(os.getenv("TG_API_ID"))
     TG_API_HASH = os.getenv("TG_API_HASH")
     TARGET_CHATS = os.getenv("TELEGRAM_CHATS").split(",")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    FLASS_BOT_SESSION_NAME = os.getenv("FLASS_BOT_SESSION_NAME")
     FLASS_BOT_TOKEN = os.getenv("FLASS_BOT_TOKEN")
-    FLASS_BOT_API_ID = os.getenv("FLASS_BOT_API_ID")
+    FLASS_BOT_API_ID = int(os.getenv("FLASS_BOT_API_ID"))
     FLASS_BOT_API_HASH = os.getenv("FLASS_BOT_API_HASH")
 
     db_user = os.getenv("DB_USER")
@@ -81,7 +83,7 @@ async def main() -> None:
         return
 
     assert TARGET_CHATS != []
-    tg_user_client = TelegramClient("testing_session2", TG_API_ID, TG_API_HASH)
+    tg_user_client = TelegramClient(TG_API_SESSION_NAME, TG_API_ID, TG_API_HASH)
     openai_client = OpenAIClient(OPENAI_API_KEY)
     # test_ai_client = MockOpenAIClient()
     postgre_db = PostgreDB(db_url=POSTGRE_DB_URL)
@@ -89,7 +91,9 @@ async def main() -> None:
     ticket_ctrl = TicketController(tickets_repo)
 
     # START
-    flass_bot = TelegramClient("bot_session", FLASS_BOT_API_ID, FLASS_BOT_API_HASH)
+    flass_bot = TelegramClient(
+        FLASS_BOT_SESSION_NAME, FLASS_BOT_API_ID, FLASS_BOT_API_HASH
+    )
     await flass_bot.start(bot_token=FLASS_BOT_TOKEN)
 
     chat_id_to_route_config = {r.chat_id: r for r in route_configs}
@@ -136,7 +140,6 @@ async def main() -> None:
                 TARGET_CHATS,
             )
         )
-
         # Keep the script running
         await asyncio.gather(reader, *workers)
         await flass_bot.run_until_disconnected()
