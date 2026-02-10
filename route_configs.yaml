@@ -4,12 +4,12 @@ route_configs:
     routes_from: ["ALA"]
     routes_to: ["DAD", "CXR"]
     date_start: "2026-02-03"
-    date_end: "2026-02-10"
+    date_end: "2026-02-15"
     route_type: "one_way"
   - chat_id: 587665923
     username: "Eldar"
     routes_from: ["ALA"]
     routes_to: ["DAD", "PQC"]
     date_start: "2026-02-01"
-    date_end: "2026-02-10"
+    date_end: "2026-02-15"
     route_type: "one_way"
