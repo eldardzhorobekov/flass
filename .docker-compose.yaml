@@ -1,0 +1,7 @@
+services:
+  flass:
+    volumes:
+      # Слева: путь на сервере (относительно docker-compose.yml)
+      # Справа: путь внутри контейнера (как указано в WORKDIR Dockerfile)
+      - .:/app
+      - ./logs:/app/logs

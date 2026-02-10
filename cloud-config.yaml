@@ -1,0 +1,59 @@
+#cloud-config
+write_files:
+  - path: /root/bin.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+
+      # Цвета для вывода, чтобы в терминале VS Code было красиво
+      GREEN='\033[0-32m'
+      NC='\033[0m' # No Color
+
+      echo -e "${GREEN}>>> Начинаю настройку сервера для Flass...${NC}"
+
+      # 1. Обновление системы
+      apt-get update && apt-get upgrade -y
+
+      # 2. Установка Docker (официальный скрипт)
+      echo -e "${GREEN}>>> Установка Docker...${NC}"
+      curl -fsSL https://get.docker.com -o get-docker.sh
+      sh get-docker.sh
+      systemctl enable docker
+      systemctl start docker
+
+      # 3. Установка Fail2ban и базовая защита SSH
+      echo -e "${GREEN}>>> Настройка Fail2ban...${NC}"
+      apt-get install -y fail2ban
+      cat <<EOF > /etc/fail2ban/jail.local
+      [sshd]
+      enabled = true
+      port = ssh
+      filter = sshd
+      logpath = /var/log/auth.log
+      maxretry = 3
+      bantime = 3600
+      EOF
+      systemctl restart fail2ban
+
+      # 4. Создание структуры проекта
+      echo -e "${GREEN}>>> Создание папок проекта...${NC}"
+      mkdir -p /opt/flass/logs
+      touch /opt/flass/.env
+
+      # 5. Установка часового пояса (Кыргызстан)
+      timedatectl set-timezone Asia/Bishkek
+
+      echo -e "${GREEN}>>> Настройка завершена!${NC}"
+      echo "Не забудь заполнить /opt/flass/.env своими API ключами."
+
+runcmd:
+  - bash /root/bin.sh
+
+# 5. Создание пользователя (безопаснее, чем работать под root)
+users:
+  - name: deployer
+    groups: sudo, docker
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPEU4mOtkTeFhcXEB4V++iDcmumsLh3tBKvZT2URXrVN eldar.djorobekov@gmail.com
