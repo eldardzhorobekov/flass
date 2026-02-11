@@ -1,30 +1,30 @@
-version: '3.8'
-
 services:
   # Сервис Базы Данных
   db:
-    image: postgres:15-alpine
+    image: postgres:16
     container_name: flass_postgre
     restart: always
     environment:
-      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_USER=${DB_USER:-flass_user}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME:-flight_data}
+      - POSTGRES_DB=${DB_NAME:-flass}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready", "-U", "flass_user", "-d", "flass"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
   flass-app:
     build: .
     container_name: flass_app
     restart: always
     depends_on:
-      db:
-        condition: service_healthy
+      - db
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
     env_file:
       - .env
     volumes:
