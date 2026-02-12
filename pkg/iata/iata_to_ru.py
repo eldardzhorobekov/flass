@@ -56,6 +56,10 @@ CITY_DATA = [
     ["BKK", "Бангкок", "Bangkok"],
     ["UTP", "Паттайя", "Pattaya"],
     ["DMK", "Дон Муанг", "Don Mueang"],
+    # --- ШРИ-ЛАНКА ---
+    ["CMB", "Коломбо", "Colombo"],
+    ["HRI", "Хамбантота", "Hambantota"],
+    ["HRI", "Маттала", "Mattala"],
     # --- OTHER TOURISTIC (Egypt, UAE, etc.) ---
     ["DXB", "Дубай", "Dubai"],
     ["SHJ", "Шарджа", "Sharjah"],
