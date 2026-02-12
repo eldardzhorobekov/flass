@@ -1,47 +1,73 @@
-# [IATA, Russian Name, English Name]
 import re
 
+# [IATA, Russian Name, English Name]
 CITY_DATA = [
+    # --- KAZAKHSTAN (Main Hubs) ---
     ["ALA", "Алматы", "Almaty"],
     ["NQZ", "Астана", "Astana"],
-    ["SCO", "Актау", "Aktau"],
     ["CIT", "Шымкент", "Shymkent"],
+    ["SCO", "Актау", "Aktau"],
     ["GUW", "Атырау", "Atyrau"],
     ["AKX", "Актобе", "Aktobe"],
+    ["UKK", "Усть-Каменогорск", "Oskemen"],
+    ["URA", "Уральск", "Oral"],
     ["KGF", "Караганда", "Karaganda"],
     ["KSN", "Костанай", "Kostanay"],
+    ["PWQ", "Павлодар", "Pavlodar"],
+    ["KZO", "Кызылорда", "Kyzylorda"],
+    # --- KYRGYZSTAN ---
+    ["FRU", "Бишкек", "Bishkek"],
+    ["OSS", "Ош", "Osh"],
+    ["IKU", "Тамчы", "Tamchy"],  # Issyk-Kul
+    # --- UZBEKISTAN ---
+    ["TAS", "Ташкент", "Tashkent"],
+    ["SKD", "Самарканд", "Samarkand"],
+    ["BHK", "Бухара", "Bukhara"],
+    ["UGC", "Ургенч", "Urgench"],
+    # --- TAJIKISTAN ---
+    ["DYU", "Душанбе", "Dushanbe"],
+    ["LBD", "Худжанд", "Khujand"],
+    # --- RUSSIA (Major Connections) ---
+    ["MOW", "Москва", "Moscow"],  # General code for Moscow
+    ["SVO", "Шереметьево", "Sheremetyevo"],
+    ["DME", "Домодедово", "Domodedovo"],
+    ["VKO", "Внуково", "Vnukovo"],
+    ["LED", "Санкт-Петербург", "Saint Petersburg"],
+    ["OVB", "Новосибирск", "Novosibirsk"],
+    ["SVX", "Екатеринбург", "Yekaterinburg"],
+    ["KZN", "Казань", "Kazan"],
+    ["AER", "Сочи", "Sochi"],
+    # --- TURKEY (Touristic) ---
+    ["AYT", "Анталья", "Antalya"],
+    ["IST", "Стамбул", "Istanbul"],
+    ["SAW", "Сабиха Гёкчен", "Sabiha Gokcen"],
+    ["BJV", "Бодрум", "Bodrum"],
+    ["DLM", "Даламан", "Dalaman"],
+    ["ESB", "Анкара", "Ankara"],
+    # --- VIETNAM (Popular Charters) ---
     ["DAD", "Дананг", "Danang"],
     ["CXR", "Нячанг", "Nha Trang"],
     ["CXR", "Камрань", "Cam Ranh"],
     ["PQC", "Фукуок", "Phu Quoc"],
     ["SGN", "Хошимин", "Ho Chi Minh"],
+    ["HAN", "Ханой", "Hanoi"],
+    # --- THAILAND ---
     ["HKT", "Пхукет", "Phuket"],
     ["BKK", "Бангкок", "Bangkok"],
     ["UTP", "Паттайя", "Pattaya"],
-    ["SYX", "Санья", "Sanya"],
-    ["DPS", "Бали", "Bali"],
+    ["DMK", "Дон Муанг", "Don Mueang"],
+    # --- OTHER TOURISTIC (Egypt, UAE, etc.) ---
     ["DXB", "Дубай", "Dubai"],
-    ["DWC", "Дубай (Аль-Мактум)", "Dubai Al Maktoum"],
     ["SHJ", "Шарджа", "Sharjah"],
     ["AUH", "Абу-Даби", "Abu Dhabi"],
-    ["AYT", "Анталья", "Antalya"],
-    ["IST", "Стамбул", "Istanbul"],
-    ["SAW", "Стамбул (Сабиха)", "Istanbul Sabiha"],
-    ["PME", "Бодрум", "Bodrum"],
-    ["DLM", "Даламан", "Dalaman"],
     ["SSH", "Шарм-эль-Шейх", "Sharm El Sheikh"],
     ["HRG", "Хургада", "Hurghada"],
-    ["MCT", "Маскат", "Muscat"],
+    ["MLE", "Мале", "Male"],  # Maldives
+    ["DPS", "Бали", "Bali"],
+    ["GYD", "Баку", "Baku"],
     ["TBS", "Тбилиси", "Tbilisi"],
     ["BUS", "Батуми", "Batumi"],
     ["EVN", "Ереван", "Yerevan"],
-    ["GYD", "Баку", "Baku"],
-    ["TAS", "Ташкент", "Tashkent"],
-    ["MOW", "Москва", "Moscow"],
-    ["LED", "Санкт-Петербург", "Saint Petersburg"],
-    ["MIN", "Минск", "Minsk"],
-    ["WAW", "Варшава", "Warsaw"],
-    ["MIL", "Милан", "Milan"],
 ]
 
 # 1. IATA_TO_RU: Only sets the value if it doesn't exist yet (keeps the first/primary name)
