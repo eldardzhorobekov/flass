@@ -6,6 +6,7 @@ import pytest
 from domain.enum import RouteType
 from domain.route import RouteConfig
 from domain.ticket import Ticket
+from pkg.iata.iata_to_ru import iata_to_ru, ru_or_en_to_iata
 from tickets.convert import __choose_nearest_future_date, convert_ai_response_to_ticket
 
 
@@ -14,8 +15,8 @@ from tickets.convert import __choose_nearest_future_date, convert_ai_response_to
     [
         [
             {
-                "route_from": "Пхукет (HKT)",
-                "route_to": "Москва (VKO)",
+                "route_from": "Алматы",
+                "route_to": "Дубай",
                 "date_start": "2023-10-02T01:30:00",
                 "date_start_raw": "2023-10-02",
                 "date_end": None,
@@ -26,8 +27,8 @@ from tickets.convert import __choose_nearest_future_date, convert_ai_response_to
             },
             datetime.datetime(2023, 9, 10, tzinfo=datetime.UTC),
             Ticket(
-                route_from="Пхукет (HKT)",
-                route_to="Москва (VKO)",
+                route_from="ALA",
+                route_to="DXB",
                 date_start=datetime.datetime(2023, 10, 2, 1, 30, tzinfo=datetime.UTC),
                 date_end=None,
                 price=18500,
@@ -105,3 +106,26 @@ def test___choose_nearest_future_date(
 def test_convert_route_config(data: dict[str, Any], result: RouteConfig) -> None:
     actual = RouteConfig.from_dict(data)
     assert actual == result
+
+
+@pytest.mark.parametrize(
+    "iata_code, expected",
+    [["DXB", "Дубай"], ["ALA", "Алматы"], ["XYZ", "XYZ"], ["CXR", "Нячанг"]],
+)
+def test_iata_to_ru(iata_code: str, expected: str) -> None:
+    actual = iata_to_ru(iata_code)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "city, expected",
+    [
+        ["Almaty", "ALA"],
+        ["Алматы", "ALA"],
+        ["Алматы (ALA)", "ALA"],
+        ["Unknown", "Unknown"],
+    ],
+)
+def test_ru_or_en_to_iata(city: str, expected: str) -> None:
+    actual = ru_or_en_to_iata(city)
+    assert actual == expected

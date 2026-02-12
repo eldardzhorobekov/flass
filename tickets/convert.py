@@ -3,6 +3,7 @@ from typing import Any
 
 from domain.ticket import Ticket
 from parser.date import parse_ambiguous_date
+from pkg.iata.iata_to_ru import ru_or_en_to_iata
 
 
 def convert_ai_response_to_ticket(
@@ -20,8 +21,8 @@ def convert_ai_response_to_ticket(
     )
 
     ticket = Ticket(
-        route_from=data_dict["route_from"],
-        route_to=data_dict["route_to"],
+        route_from=ru_or_en_to_iata(data_dict["route_from"]),
+        route_to=ru_or_en_to_iata(data_dict["route_to"]),
         date_start=date_start,
         date_end=date_end,
         price=data_dict["price"],
