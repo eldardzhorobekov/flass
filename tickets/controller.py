@@ -6,6 +6,7 @@ from db.tickets.repo import TicketRepo
 from domain.enum import RouteType
 from domain.route import RouteConfig
 from domain.ticket import Ticket, TicketComplete, TicketExists
+from tickets.match import match_ticket_route
 
 
 class TicketController:
@@ -33,6 +34,7 @@ class TicketController:
             return []
 
         tickets = await self._ticket_repo.list(route)
+        tickets = [t for t in tickets if match_ticket_route(t, route)]
         tickets = self._filter_tickets_by_last_added(tickets)
         tickets = sorted(tickets, key=lambda t: t.date_start)
         return tickets
