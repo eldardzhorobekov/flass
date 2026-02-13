@@ -1,14 +1,18 @@
+from jinja2 import Environment
 from telethon import TelegramClient, events
 
 from domain.route import RouteConfig
 from tickets.controller import TicketController
-from tickets.message import format_ticket_message
+from tickets.message import (
+    render_list_tickets,
+)
 
 
 def register_list_tickets(
     bot: TelegramClient,
     ticket_controller: TicketController,
     chat_id_to_route_config: dict[int, RouteConfig],
+    jinja_env: Environment,
 ) -> None:
     @bot.on(events.NewMessage(pattern="/list"))
     async def list_tickets(event: events.NewMessage.Event) -> None:
@@ -30,5 +34,5 @@ def register_list_tickets(
             )
             return
 
-        for t in tickets:
-            await event.respond(format_ticket_message(t), link_preview=False)
+        message = render_list_tickets(jinja_env, tickets)
+        await event.respond(message, link_preview=False)

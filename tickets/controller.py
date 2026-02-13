@@ -36,7 +36,7 @@ class TicketController:
         tickets = await self._ticket_repo.list(route)
         tickets = [t for t in tickets if match_ticket_route(t, route)]
         tickets = self._filter_tickets_by_last_added(tickets)
-        tickets = sorted(tickets, key=lambda t: t.date_start)
+        tickets = sorted(tickets, key=lambda t: (t.price, t.date_start))
         return tickets
 
     @staticmethod

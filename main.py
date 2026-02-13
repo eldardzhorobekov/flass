@@ -3,6 +3,7 @@ import logging
 import os
 
 from dotenv import load_dotenv
+from jinja2 import Environment, FileSystemLoader
 from telethon import TelegramClient
 
 from api.telegram.list_tickets import register_list_tickets
@@ -13,6 +14,7 @@ from clients.openai.request import OpenAIClient
 from configs.logger import setup_logger
 from db.tickets.repo import TicketRepo
 from domain.route import RouteConfig
+from pkg.iata.iata_to_ru import iata_to_ru
 from pkg.postgre.postgre import PostgreDB
 from pkg.yaml.read import read
 from tickets.controller import TicketController
@@ -64,6 +66,7 @@ async def main() -> None:
     FLASS_BOT_TOKEN = os.getenv("FLASS_BOT_TOKEN")
     FLASS_BOT_API_ID = int(os.getenv("FLASS_BOT_API_ID"))
     FLASS_BOT_API_HASH = os.getenv("FLASS_BOT_API_HASH")
+    JINJA_TEMPLATES_PATH = os.getenv("JINJA_TEMPLATE_PATH")
 
     db_user = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
@@ -98,11 +101,14 @@ async def main() -> None:
 
     chat_id_to_route_config = {r.chat_id: r for r in route_configs}
 
+    jinja_env = create_jinja_env(path=JINJA_TEMPLATES_PATH)
+
     register_start_handler(flass_bot)
     register_list_tickets(
         bot=flass_bot,
         ticket_controller=ticket_ctrl,
         chat_id_to_route_config=chat_id_to_route_config,
+        jinja_env=jinja_env,
     )
     register_myroute(
         bot=flass_bot,
@@ -147,6 +153,16 @@ async def main() -> None:
     except KeyboardInterrupt:
         # Handle the Ctrl+C at the top level
         pass
+
+
+def create_jinja_env(path: str) -> Environment:
+    jinja_env = Environment(
+        loader=FileSystemLoader(path),
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    jinja_env.filters["iata_to_ru"] = iata_to_ru
+    return jinja_env
 
 
 if __name__ == "__main__":
