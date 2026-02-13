@@ -1,122 +1,100 @@
 import datetime
 
-import pytest
-
-from domain.ticket import TicketComplete
 from tickets.controller import TicketController
 
 
-def _last_tickets() -> list[TicketComplete]:
-    "just don't wanna copy"
-    return [
-        # Almaty - Danang 2026-02-02
-        TicketComplete(
-            id=3,
-            chat_id=1,
-            chat_name="test",
-            message_id=3,
-            posted_at=datetime.datetime(2026, 2, 1, tzinfo=datetime.UTC),
-            route_from="Almaty",
-            route_to="Danang",
-            date_start=datetime.datetime(2026, 2, 2, tzinfo=datetime.UTC),
-            date_end=None,
-            price=13000,
-            currency="rub",
-            airline="Aeroflot",
-        ),
-        # Bishkek - Phuquoc 2026-02-10
-        TicketComplete(
-            id=5,
-            chat_id=1,
-            chat_name="test",
-            message_id=5,
-            posted_at=datetime.datetime(2026, 2, 5, tzinfo=datetime.UTC),
-            route_from="Bishkek",
-            route_to="Phuquoc",
-            date_start=datetime.datetime(2026, 2, 10, tzinfo=datetime.UTC),
-            date_end=None,
-            price=20000,
-            currency="rub",
-            airline="Aeroflot",
-        ),
-        # Moscow - Phuket
-        TicketComplete(
-            id=6,
-            chat_id=1,
-            chat_name="test",
-            message_id=6,
-            posted_at=datetime.datetime(2026, 2, 5, tzinfo=datetime.UTC),
-            route_from="Moscow",
-            route_to="Phuket",
-            date_start=datetime.datetime(2026, 2, 15, tzinfo=datetime.UTC),
-            date_end=None,
-            price=50000,
-            currency="rub",
-            airline="Aeroflot",
-        ),
-    ]
+def test__filter_tickets_by_last_added(ticket_factory):
+    chat_id = 1
+    utc = datetime.UTC
+    airline = "Aeroflot"  # Фиксируем авиакомпанию для всех
 
+    # Almaty - Danang
+    ala_1 = ticket_factory(
+        route_from="Almaty",
+        route_to="Danang",
+        price=18500,
+        chat_id=chat_id,
+        airline=airline,
+        posted_at=datetime.datetime(2026, 1, 28, tzinfo=utc),
+    )
+    ala_2 = ticket_factory(
+        route_from="Almaty",
+        route_to="Danang",
+        price=15000,
+        chat_id=chat_id,
+        airline=airline,
+        posted_at=datetime.datetime(2026, 1, 31, tzinfo=utc),
+    )
+    ala_last = ticket_factory(
+        route_from="Almaty",
+        route_to="Danang",
+        price=13000,
+        chat_id=chat_id,
+        airline=airline,
+        posted_at=datetime.datetime(2026, 2, 1, tzinfo=utc),
+    )
 
-@pytest.mark.parametrize(
-    "tickets, expected",
-    [
-        [
-            [
-                # Almaty - Danang 2026-02-02
-                TicketComplete(
-                    id=1,
-                    chat_id=1,
-                    chat_name="test",
-                    message_id=2,
-                    posted_at=datetime.datetime(2026, 1, 28, tzinfo=datetime.UTC),
-                    route_from="Almaty",
-                    route_to="Danang",
-                    date_start=datetime.datetime(2026, 2, 2, tzinfo=datetime.UTC),
-                    date_end=None,
-                    price=18500,
-                    currency="rub",
-                    airline="Aeroflot",
-                ),
-                TicketComplete(
-                    id=2,
-                    chat_id=1,
-                    chat_name="test",
-                    message_id=2,
-                    posted_at=datetime.datetime(2026, 1, 31, tzinfo=datetime.UTC),
-                    route_from="Almaty",
-                    route_to="Danang",
-                    date_start=datetime.datetime(2026, 2, 2, tzinfo=datetime.UTC),
-                    date_end=None,
-                    price=15000,
-                    currency="rub",
-                    airline="Aeroflot",
-                ),
-                _last_tickets()[0],
-                # Bishkek - Phuquoc 2026-02-10
-                TicketComplete(
-                    id=4,
-                    chat_id=1,
-                    chat_name="test",
-                    message_id=4,
-                    posted_at=datetime.datetime(2026, 1, 28, tzinfo=datetime.UTC),
-                    route_from="Bishkek",
-                    route_to="Phuquoc",
-                    date_start=datetime.datetime(2026, 2, 10, tzinfo=datetime.UTC),
-                    date_end=None,
-                    price=15000,
-                    currency="rub",
-                    airline="Aeroflot",
-                ),
-                _last_tickets()[1],
-                # Moscow - Phuket
-                _last_tickets()[2],
-            ],
-            _last_tickets(),
-        ]
-    ],
-)
-def test__filter_tickets_by_last_added(
-    tickets: list[TicketComplete], expected: list[TicketComplete]
-) -> list[TicketComplete]:
+    # Bishkek - Phuquoc
+    bish_1 = ticket_factory(
+        route_from="Bishkek",
+        route_to="Phuquoc",
+        price=15000,
+        chat_id=chat_id,
+        airline=airline,
+        posted_at=datetime.datetime(2026, 1, 28, tzinfo=utc),
+    )
+    bish_last = ticket_factory(
+        route_from="Bishkek",
+        route_to="Phuquoc",
+        price=20000,
+        chat_id=chat_id,
+        airline=airline,
+        posted_at=datetime.datetime(2026, 2, 5, tzinfo=utc),
+    )
+
+    # Moscow - Phuket
+    mos_last = ticket_factory(
+        route_from="Moscow",
+        route_to="Phuket",
+        price=50000,
+        chat_id=chat_id,
+        airline=airline,
+        posted_at=datetime.datetime(2026, 2, 5, tzinfo=utc),
+    )
+
+    tickets = [ala_1, ala_2, ala_last, bish_1, bish_last, mos_last]
+
+    # Ожидаем только последние билеты с проставленными ценами
+    ala_last.prev_price = 15000
+    bish_last.prev_price = 15000
+    mos_last.prev_price = None
+
+    expected = [ala_last, bish_last, mos_last]
+
     actual = TicketController._filter_tickets_by_last_added(tickets)
+
+    # Сортировка важна для сравнения списков
+    actual.sort(key=lambda x: (x.route_from, x.route_to))
+    expected.sort(key=lambda x: (x.route_from, x.route_to))
+
     assert actual == expected
+
+
+def test_filter_ignores_same_price(ticket_factory):
+    # Создаем три билета: 100к -> 100к -> 90к
+    t1 = ticket_factory(price=100000)
+    t1.posted_at = datetime.datetime(2026, 2, 1, 10, 0)
+
+    t2 = ticket_factory(price=100000)
+    t2.posted_at = datetime.datetime(2026, 2, 1, 11, 0)
+
+    t3 = ticket_factory(price=90000)
+    t3.posted_at = datetime.datetime(2026, 2, 1, 12, 0)
+
+    from tickets.controller import TicketController
+
+    result = TicketController._filter_tickets_by_last_added([t1, t2, t3])
+
+    assert len(result) == 1
+    assert result[0].price == 90000
+    assert result[0].prev_price == 100000

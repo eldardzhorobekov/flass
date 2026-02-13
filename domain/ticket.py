@@ -22,6 +22,7 @@ class TicketComplete(Ticket):
     chat_name: str
     message_id: int
     posted_at: datetime.datetime
+    prev_price: int | None = None
 
 
 @dataclass

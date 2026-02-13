@@ -94,8 +94,8 @@ def test___choose_nearest_future_date(
             RouteConfig(
                 username="Eldars",
                 chat_id=123,
-                routes_from=["Almaty"],
-                routes_to=["Danang"],
+                routes_from=("Almaty",),
+                routes_to=("Danang",),
                 date_start=datetime.date(2026, 2, 3),
                 date_end=datetime.date(2026, 2, 10),
                 route_type=RouteType.one_way,

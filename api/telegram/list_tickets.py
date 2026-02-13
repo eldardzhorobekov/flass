@@ -38,4 +38,4 @@ def register_list_tickets(
             return
 
         message = render_list_tickets(jinja_env, tickets)
-        await event.respond(message, link_preview=False)
+        await event.respond(message, link_preview=False, parse_mode="Markdown")

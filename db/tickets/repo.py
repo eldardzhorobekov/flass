@@ -67,7 +67,7 @@ class TicketRepo:
         data = await self._postgre_client.fetch_one(query, params=params)
         return data and data["exists"]
 
-    async def list(
+    async def list_tickets(
         self, params: ParamsTicketList | None = None, ids: list[int] = None
     ) -> list[TicketComplete]:
         if not params and not ids:

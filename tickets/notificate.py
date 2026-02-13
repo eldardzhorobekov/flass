@@ -27,4 +27,6 @@ class TicketNotificateClient:
 
         message = render_list_tickets(jinja_env, filtered_tickets)
         logger.debug(f"sending message. chat_id:{chat_id}, message:\n{message}")
-        await self._tg_bot.send_message(chat_id, message=message, link_preview=False)
+        await self._tg_bot.send_message(
+            chat_id, message=message, link_preview=False, parse_mode="Markdown"
+        )
