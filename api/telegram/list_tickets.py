@@ -27,7 +27,9 @@ def register_list_tickets(
             )
             return
 
-        tickets = await ticket_controller.list(chat_id_to_route_config[event.chat_id])
+        tickets = await ticket_controller.list_by_route(
+            chat_id_to_route_config[event.chat_id]
+        )
 
         if not tickets:
             await event.respond(

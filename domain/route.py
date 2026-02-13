@@ -5,12 +5,12 @@ from typing import Any
 from domain.enum import RouteType
 
 
-@dataclass
+@dataclass(frozen=True)
 class RouteConfig:
     username: str
     chat_id: int
-    routes_from: list[str]
-    routes_to: list[str]
+    routes_from: tuple[str]
+    routes_to: tuple[str]
     date_start: datetime.date
     date_end: datetime.date
     route_type: RouteType
@@ -20,8 +20,8 @@ class RouteConfig:
         return cls(
             username=data["username"],
             chat_id=data["chat_id"],
-            routes_from=data["routes_from"],
-            routes_to=data["routes_to"],
+            routes_from=tuple(data["routes_from"]),
+            routes_to=tuple(data["routes_to"]),
             date_start=datetime.datetime.strptime(
                 data["date_start"], "%Y-%m-%d"
             ).date(),

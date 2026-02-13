@@ -2,14 +2,14 @@ route_configs:
   - chat_id: 8481798429
     username: "Eldar Vietnam"
     routes_from: ["ALA", "FRU", "NQZ", "OSS"]
-    routes_to: ["DAD", "CXR", "PQC"]
+    routes_to: ["PQC"]
     date_start: "2026-02-12"
-    date_end: "2026-02-28"
+    date_end: "2026-05-01"
     route_type: "one_way"
   - chat_id: 587665923
     username: "Eldar"
     routes_from: ["ALA", "FRU", "NQZ", "OSS"]
-    routes_to: ["HKT", "BKK", "UTP", "DMK", "DXB"]
+    routes_to: ["DAD", "CXR"]
     date_start: "2026-02-01"
-    date_end: "2026-02-15"
+    date_end: "2026-04-15"
     route_type: "one_way"

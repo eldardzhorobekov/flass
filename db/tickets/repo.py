@@ -67,17 +67,35 @@ class TicketRepo:
         data = await self._postgre_client.fetch_one(query, params=params)
         return data and data["exists"]
 
-    async def list(self, params: ParamsTicketList) -> list[TicketComplete]:
+    async def list(
+        self, params: ParamsTicketList | None = None, ids: list[int] = None
+    ) -> list[TicketComplete]:
+        if not params and not ids:
+            return []
+
+        q_and = []
+        q_params = []
+        if ids:
+            q_and.append("id = ANY(%s)")
+            q_params.append(ids)
+        if params:
+            q_and.extend(
+                [
+                    "route_from = ANY(%s)",
+                    "route_to = ANY(%s)",
+                    "%s <= date_start",
+                ]
+            )
+            q_params.extend([params.routes_from, params.routes_to, params.date_start])
+
         query = """
             SELECT id, chat_id, chat_name, message_id, posted_at, route_from, route_to, date_start, date_end, price, currency, airline
             FROM flass.tickets
-            WHERE 
-            route_from = ANY(%s)
-            AND route_to = ANY(%s)
-            AND %s <= date_start
-        """
+            WHERE {q_and}
+        """.format(q_and=" AND ".join(q_and))
         data = await self._postgre_client.fetch_all(
-            query, params=[params.routes_from, params.routes_to, params.date_start]
+            query,
+            params=q_params,
         )
         tickets = [TicketComplete(**d) for d in data]
         return tickets

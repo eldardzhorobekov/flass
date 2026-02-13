@@ -107,3 +107,7 @@ async def test_repo():
     for params, has_at_least in list_tickets_test_cases:
         listed_tickets = await client.list(params)
         assert len(listed_tickets) >= has_at_least, params
+
+    # test tickets list by ids
+    tickets_list = await client.list(ids=ticket_ids)
+    assert len(tickets_list) == len(ticket_ids)

@@ -18,7 +18,6 @@ from pkg.iata.iata_to_ru import iata_to_ru
 from pkg.postgre.postgre import PostgreDB
 from pkg.yaml.read import read
 from tickets.controller import TicketController
-from tickets.match import match_ticket_route
 from tickets.notificate import TicketNotificateClient
 from tickets.read_chats import read_chats
 
@@ -31,26 +30,21 @@ async def worker_user_notification(
     name: str,
     queue: asyncio.Queue,
     ticket_notificate_client: TicketNotificateClient,
-    ticket_repo: TicketRepo,
+    ticket_ctrl: TicketController,
     route_configs: list[RouteConfig],
+    jinja_env: Environment,
 ) -> None:
     """Processes tickets one by one from the queue."""
     while True:
-        ticket_id = await queue.get()
-        logger.debug(f"Worker {name} picked up {ticket_id}")
+        ticket_ids = await queue.get()
+        logger.debug(f"Worker {name} picked up {ticket_ids}")
 
         try:
-            ticket = await ticket_repo.get(ticket_id=ticket_id)
-            user_chat_ids = []
-            for route in route_configs:
-                if not match_ticket_route(ticket, route):
-                    continue
-                user_chat_ids.append(route.chat_id)
-            if user_chat_ids:
-                logger.debug(
-                    f"sending notification to {user_chat_ids}, ticket={ticket.id}"
+            route_to_tickets = await ticket_ctrl.list_by_ids(ticket_ids, route_configs)
+            for route, tickets in route_to_tickets.items():
+                await ticket_notificate_client.notificate_v2(
+                    jinja_env, route.chat_id, tickets
                 )
-                await ticket_notificate_client.notificate(user_chat_ids, ticket)
         finally:
             # Notify the queue that the ticket is done
             queue.task_done()
@@ -129,8 +123,9 @@ async def main() -> None:
                     f"#{i}",
                     queue,
                     ticket_notificate_client,
-                    tickets_repo,
+                    ticket_ctrl,
                     route_configs,
+                    jinja_env,
                 )
             )
             workers.append(worker_task)

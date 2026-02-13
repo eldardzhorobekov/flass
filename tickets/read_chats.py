@@ -86,8 +86,8 @@ async def read_chats(
             ticket_ids = await ticket_ctrl.insert(
                 tickets, event.chat.id, event.message.id, username, event.message.date
             )
-            for t in ticket_ids:
-                await queue.put(t)
+            if ticket_ids:
+                await queue.put(ticket_ids)
         except Exception as e:
             logger.error(f"can't insert tickets to db: {tickets}. Error: {e}")
             return

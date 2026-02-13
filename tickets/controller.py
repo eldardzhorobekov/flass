@@ -29,15 +29,33 @@ class TicketController:
         )
         return ticket_ids
 
-    async def list(self, route: RouteConfig) -> list[TicketComplete]:
+    async def list_by_route(self, route: RouteConfig) -> list[TicketComplete]:
         if route.route_type not in (RouteType.one_way,):
             return []
 
-        tickets = await self._ticket_repo.list(route)
-        tickets = [t for t in tickets if match_ticket_route(t, route)]
+        tickets = await self._ticket_repo.list(route, None)
         tickets = self._filter_tickets_by_last_added(tickets)
+        tickets = [t for t in tickets if match_ticket_route(t, route)]
         tickets = sorted(tickets, key=lambda t: (t.price, t.date_start))
         return tickets
+
+    async def list_by_ids(
+        self, ids: list[int], route_configs: list[RouteConfig]
+    ) -> dict[RouteConfig, list[TicketComplete]]:
+        tickets = await self._ticket_repo.list(None, ids)
+        tickets = self._filter_tickets_by_last_added(tickets)
+        tickets = sorted(tickets, key=lambda t: (t.price, t.date_start))
+
+        route_configs_to_tickets: dict[RouteConfig, list[TicketComplete]] = defaultdict(
+            list
+        )
+
+        for ticket in tickets:
+            for route in route_configs:
+                if not match_ticket_route(ticket, route):
+                    continue
+                route_configs_to_tickets[route].append(ticket)
+        return route_configs_to_tickets
 
     @staticmethod
     def _filter_tickets_by_last_added(
