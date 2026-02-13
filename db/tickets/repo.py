@@ -97,7 +97,7 @@ class TicketRepo:
         """.format(q_and=" AND ".join(q_and))
         data = await self._postgre_client.fetch_all(
             query,
-            params=q_params,
+            params=tuple(q_params),
         )
         tickets = [TicketComplete(**d) for d in data]
         return tickets
