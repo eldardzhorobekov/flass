@@ -37,6 +37,7 @@ def ticket_factory() -> TicketFactoryType:
         is_rt: bool = False,
         price: int = 100000,
         days_delta: int = 7,
+        airline: str | None = None,  # Добавили параметр
     ) -> TicketComplete:
         start: datetime.datetime = datetime.datetime(2026, 2, 20)
         end: datetime.datetime | None = (
@@ -50,7 +51,7 @@ def ticket_factory() -> TicketFactoryType:
             date_end=end,
             price=price,
             currency="KZT",
-            airline=None,
+            airline=airline,  # Теперь пробрасываем его
             id=1,
             chat_id=123,
             chat_name="charterkaz",

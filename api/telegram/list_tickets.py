@@ -28,6 +28,7 @@ def register_list_tickets(
             return
 
         tickets = await ticket_controller.list(chat_id_to_route_config[event.chat_id])
+
         if not tickets:
             await event.respond(
                 "На данный момент нет активных билетов по вашему запросу. Настроить другой маршрут: ** /settings **"

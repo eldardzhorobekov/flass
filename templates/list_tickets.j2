@@ -1,29 +1,27 @@
-{% for chat in tickets | groupby('chat_name') %}
+{% for chat in tickets | groupby('chat_name') -%}
 🏷 **КАНАЛ: {{ chat.grouper | upper }}**
 ━━━━━━━━━━━━━━━━━━
-{% set ow_tickets = chat.list | selectattr('date_end', 'none') | list %}
-{% set rt_tickets = chat.list | rejectattr('date_end', 'none') | list %}
+{% set ow_tickets = chat.list | selectattr('date_end', 'none') | list -%}
+{% set rt_tickets = chat.list | rejectattr('date_end', 'none') | list -%}
 
 {# --- В одну сторону --- #}
-{% for route in ow_tickets | groupby('group_key_simple') %}
-{% set first = route.list[0] %}
+{% for route in ow_tickets | groupby('group_key_simple') -%}
+{% set first = route.list[0] -%}
 📍 {{ first.route_from | iata_to_ru }} ➔ {{ first.route_to | iata_to_ru }}
-{% for t in route.list %}
-🗓 {{ t.date_start.strftime('%d.%m') }}  —  💰 **{{ t.price }} {{ t.currency }}** [👉 Взять](https://t.me/{{ t.chat_name }}/{{ t.message_id }})
-{% endfor %}
-{% endfor %}
+{% for t in route.list -%}
+🗓 {{ t.date_start.strftime('%d.%m') }}{% if t.airline %} ({{ t.airline }}){% endif %}  —  💰 **{{ t.price }} {{ t.currency }}** [👉 Взять](https://t.me/{{ t.chat_name }}/{{ t.message_id }})
+{% endfor -%}
+{% endfor -%}
 
 {% if ow_tickets and rt_tickets %}
-
 {% endif %}
 {# --- Туда-Обратно --- #}
-{% for route in rt_tickets | groupby('group_key_simple') %}
-{% set first = route.list[0] %}
+{%- for route in rt_tickets | groupby('group_key_simple') -%}
+{% set first = route.list[0] -%}
 📍 {{ first.route_from | iata_to_ru }} ➔ {{ first.route_to | iata_to_ru }} ➔ {{ first.route_from | iata_to_ru }}
-{% for t in route.list %}
-{% set nights = (t.date_end - t.date_start).days %}
-🗓 {{ t.date_start.strftime('%d.%m') }} - {{ t.date_end.strftime('%d.%m') }} ({{ nights }}н)  —  💰 **{{ t.price }} {{ t.currency }}** [👉 Взять](https://t.me/{{ t.chat_name }}/{{ t.message_id }})
-{% endfor %}
-{% endfor %}
-
-{% endfor %}
+{% for t in route.list -%}
+{% set nights = (t.date_end - t.date_start).days -%}
+🗓 {{ t.date_start.strftime('%d.%m') }} - {{ t.date_end.strftime('%d.%m') }} ({{ nights }}н){% if t.airline %} [{{ t.airline }}]{% endif %}  —  💰 **{{ t.price }} {{ t.currency }}** [👉 Взять](https://t.me/{{ t.chat_name }}/{{ t.message_id }})
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}

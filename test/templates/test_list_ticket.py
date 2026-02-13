@@ -86,3 +86,29 @@ def test_multiple_routes_in_one_channel(
     assert "📍 Астана ➔ Дананг" in result
     # Проверяем, что заголовок канала только один
     assert result.count("КАНАЛ:") == 1
+
+
+def test_render_with_airline(
+    jinja_env: Environment, ticket_factory: TicketFactoryType
+) -> None:
+    """Проверка отображения авиакомпании"""
+    # 1. С авиакомпанией
+    t_with = ticket_factory(airline="Air Astana")
+    result_with = render_list_tickets(jinja_env, [t_with])
+    assert "(Air Astana)" in result_with
+
+    # 2. Без авиакомпании (airline=None)
+    t_without = ticket_factory(airline=None)
+    result_without = render_list_tickets(jinja_env, [t_without])
+    # Проверяем, что нет пустых скобок или слова None
+    assert "(None)" not in result_without
+    assert "()" not in result_without
+
+
+def test_render_rt_with_airline(
+    jinja_env: Environment, ticket_factory: TicketFactoryType
+) -> None:
+    """Проверка отображения авиакомпании в RT билете"""
+    t = ticket_factory(is_rt=True, airline="SCAT")
+    result = render_list_tickets(jinja_env, [t])
+    assert "[SCAT]" in result
