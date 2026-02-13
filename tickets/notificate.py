@@ -16,7 +16,7 @@ class TicketNotificateClient:
 
     async def notificate_v2(
         self, jinja_env: Environment, chat_id: int, tickets: list[TicketComplete]
-    ) -> bool:
+    ) -> None:
         filtered_tickets = []
         for ticket in tickets:
             cache_key = f"{ticket.id}_{chat_id}"
@@ -24,7 +24,8 @@ class TicketNotificateClient:
                 continue
             self._sent_messages_cache.add(cache_key)
             filtered_tickets.append(ticket)
-
+        if not filtered_tickets:
+            return
         message = render_list_tickets(jinja_env, filtered_tickets)
         logger.debug(f"sending message. chat_id:{chat_id}, message:\n{message}")
         await self._tg_bot.send_message(chat_id, message=message, link_preview=False)
