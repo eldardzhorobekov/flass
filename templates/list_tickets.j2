@@ -1,9 +1,10 @@
 {% for chat in tickets | groupby('chat_name') %}
-🏷 **Источник: {{ chat.grouper | upper }}**
+🏷 **КАНАЛ: {{ chat.grouper | upper }}**
 ━━━━━━━━━━━━━━━━━━
 {% set ow_tickets = chat.list | selectattr('date_end', 'none') | list %}
 {% set rt_tickets = chat.list | rejectattr('date_end', 'none') | list %}
-{# --- Блок: В одну сторону --- #}
+
+{# --- В одну сторону --- #}
 {% for route in ow_tickets | groupby('group_key_simple') %}
 {% set first = route.list[0] %}
 📍 {{ first.route_from | iata_to_ru }} ➔ {{ first.route_to | iata_to_ru }}
@@ -13,8 +14,9 @@
 {% endfor %}
 
 {% if ow_tickets and rt_tickets %}
+
 {% endif %}
-{# --- Блок: Туда-Обратно --- #}
+{# --- Туда-Обратно --- #}
 {% for route in rt_tickets | groupby('group_key_simple') %}
 {% set first = route.list[0] %}
 📍 {{ first.route_from | iata_to_ru }} ➔ {{ first.route_to | iata_to_ru }} ➔ {{ first.route_from | iata_to_ru }}
