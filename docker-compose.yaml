@@ -34,6 +34,22 @@ services:
       - TZ=Asia/Bishkek
       - DB_HOST=db
       - DB_PORT=5432
+  flass-history-parser:
+    build: .
+    command: python parse.py  # Твой файл для сбора старых сообщений
+    depends_on:
+      - db
+    profiles: ["tools"] # Опционально: запуск только по запросу
+    container_name: flass_history_parser
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./logs:/app/logs
+    environment:
+      - TZ=Asia/Bishkek
+      - DB_HOST=db
+      - DB_PORT=5432
 
 volumes:
   postgres_data:
