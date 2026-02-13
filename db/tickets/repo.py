@@ -86,7 +86,9 @@ class TicketRepo:
                     "%s <= date_start",
                 ]
             )
-            q_params.extend([params.routes_from, params.routes_to, params.date_start])
+            q_params.extend(
+                [list(params.routes_from), list(params.routes_to), params.date_start]
+            )
 
         query = """
             SELECT id, chat_id, chat_name, message_id, posted_at, route_from, route_to, date_start, date_end, price, currency, airline
